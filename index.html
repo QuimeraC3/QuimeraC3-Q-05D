@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ÁREAS DE DESARROLLO DEL INSTITUTO QUIMERA &bull; Ecosistema Científico, Académico y Profesional</title>
+    
+    <!-- PRECARGA DEFINITIVA DE TODAS LAS IMÁGENES DEL ECOSISTEMA DE DESARROLLO -->
+    <link rel="preload" href="Quimera_Desarrollo.webp" as="image">
+    <link rel="preload" href="Quimera_QE_Mod.jpg" as="image">
+    <link rel="preload" href="glitch_Q.webp" as="image">
+    <link rel="preload" href="glitch_U.webp" as="image">
+    <link rel="preload" href="glitch_I.webp" as="image">
+    <link rel="preload" href="glitch_M.webp" as="image">
+    <link rel="preload" href="glitch_E.webp" as="image">
+    <link rel="preload" href="glitch_R.webp" as="image">
+    <link rel="preload" href="glitch_A.webp" as="image">
+
     <style>
         :root {
             --card-bg: rgba(15, 23, 42, 0.90);
@@ -36,6 +48,21 @@
             filter: blur(12px);
         }
 
+        /* CAPA CRT SCANLINES */
+        .crt-scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 2000;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 6px 100%;
+            opacity: 0.65;
+        }
+
+        /* Capa de fondo estática, nítida y completa */
         .bg-image {
             position: fixed;
             top: 0;
@@ -54,7 +81,25 @@
             opacity: 1;
         }
 
-        /* Canvas para Lluvia de Código Matrix */
+        /* Capa de luz reactiva exclusiva del puntero */
+        .cursor-light-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle 400px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(56, 189, 248, 0.22), rgba(200, 139, 50, 0.12) 45%, transparent 80%);
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        .cursor-light-glow.visible {
+            opacity: 1;
+        }
+
+        /* Canvas para Lluvia de Código Matrix limpia y fluida */
         #matrix-canvas {
             position: fixed;
             top: 0;
@@ -67,7 +112,41 @@
             transition: opacity 1.5s ease;
         }
 
-        /* Clase de desvanecimiento a negro para elementos de la interfaz */
+        /* Capa de Glitch Central para las 7 Letras */
+        #glitch-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+            pointer-events: none;
+            opacity: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            transition: opacity 0.1s ease;
+        }
+
+        #glitch-img {
+            max-width: 55vw;
+            max-height: 55vh;
+            object-fit: contain;
+            filter: drop-shadow(0 0 40px rgba(56, 189, 248, 1)) contrast(160%) brightness(1.3);
+            animation: glitchJitter 0.08s infinite steps(2);
+        }
+
+        @keyframes glitchJitter {
+            0% { transform: translate(0, 0) skew(0deg); filter: hue-rotate(0deg); }
+            20% { transform: translate(-6px, 4px) skew(-3deg); filter: hue-rotate(90deg); }
+            40% { transform: translate(6px, -4px) skew(3deg); filter: hue-rotate(-90deg); }
+            60% { transform: translate(-3px, -4px) skew(1deg); }
+            80% { transform: translate(5px, 3px) skew(-2deg); }
+            100% { transform: translate(0, 0) skew(0deg); }
+        }
+
         .fade-out-element {
             opacity: 0 !important;
             pointer-events: none !important;
@@ -91,7 +170,6 @@
             opacity: 0;
         }
 
-        /* Navegación Top Bar */
         .top-bar {
             background-color: rgba(11, 19, 41, 0.0);
             padding: 0.85rem 2rem;
@@ -119,6 +197,7 @@
             font-weight: 700;
             text-decoration: none;
             letter-spacing: -0.01em;
+            display: inline-block;
             transition: color 0.2s ease, opacity 500ms ease;
         }
 
@@ -148,22 +227,116 @@
         }
 
         #audio-toggle, #fullscreen-toggle {
-            background: rgba(15, 118, 110, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 0.3rem 0.8rem;
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.22);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            color: #ffffff;
+            padding: 0.35rem 0.9rem;
             border-radius: 20px;
             cursor: pointer;
-            transition: opacity 500ms ease, background-color 0.3s ease;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+            transition: opacity 500ms ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         #audio-toggle:hover, #fullscreen-toggle:hover {
-            background: var(--primary);
+            background: rgba(56, 189, 248, 0.5);
+            border-color: #38bdf8;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
             color: #ffffff;
+        }
+
+        /* EFECTO LÁSER COMÚN */
+        .laser-burn-effect {
+            opacity: 0;
+            clip-path: inset(0 100% 0 0);
+            position: relative;
+        }
+
+        .laser-burn-effect.active-laser {
+            opacity: 1;
+            animation: hyperLaserReveal 1.2s cubic-bezier(0.15, 1, 0.2, 1) forwards;
+        }
+
+        .laser-burn-effect.revealed {
+            opacity: 1;
+            clip-path: inset(0 0 0 0);
+        }
+
+        .laser-burn-effect.active-laser::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            bottom: -30px;
+            left: 0;
+            width: 16px;
+            background: radial-gradient(circle, #ffffff 0%, #38bdf8 40%, #c88b32 80%, transparent 100%);
+            box-shadow: 0 0 35px #38bdf8, 0 0 70px #fffbeb, 0 0 100px #c88b32, inset 0 0 15px #ffffff;
+            animation: hyperLaserBarMove 1.2s cubic-bezier(0.15, 1, 0.2, 1) forwards;
+            z-index: 15;
+            filter: blur(0.5px);
+        }
+
+        .laser-burn-effect.active-laser::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            height: 120%;
+            pointer-events: none;
+            background: linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(56,189,248,0.6) 30%, rgba(200,139,50,0.3) 60%, transparent 100%);
+            mix-blend-mode: color-dodge;
+            animation: hyperLaserSparksWave 1.2s cubic-bezier(0.15, 1, 0.2, 1) forwards;
+            z-index: 12;
+        }
+
+        @keyframes hyperLaserReveal {
+            0% {
+                clip-path: inset(0 100% 0 0);
+                filter: brightness(4) contrast(200%) drop-shadow(0 0 30px rgba(56, 189, 248, 1));
+            }
+            50% {
+                filter: brightness(2.5) contrast(150%) drop-shadow(0 0 15px rgba(200, 139, 50, 0.9));
+            }
+            100% {
+                clip-path: inset(0 0 0 0);
+                filter: brightness(1) contrast(100%) drop-shadow(0 0 0px transparent);
+            }
+        }
+
+        @keyframes hyperLaserBarMove {
+            0% { left: 0%; opacity: 1; transform: scaleY(1.8) skewX(-15deg); }
+            50% { transform: scaleY(2.2) skewX(5deg); }
+            90% { opacity: 1; }
+            100% { left: 100%; opacity: 0; transform: scaleY(0.5) skewX(0deg); }
+        }
+
+        @keyframes hyperLaserSparksWave {
+            0% { opacity: 1; clip-path: inset(0 100% 0 0); }
+            100% { opacity: 0; clip-path: inset(0 0 0 0); }
+        }
+
+        .hologram-mode {
+            animation: hologramNeonGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes hologramNeonGlow {
+            0% { text-shadow: 0 0 8px rgba(56, 189, 248, 0.7), 0 0 20px rgba(15, 118, 110, 0.5), 3px 3px 8px rgba(0, 0, 0, 0.8); }
+            50% { text-shadow: 0 0 20px rgba(56, 189, 248, 1), 0 0 35px rgba(56, 189, 248, 0.8), 0 0 50px rgba(200, 139, 50, 0.6), 3px 3px 8px rgba(0, 0, 0, 0.8); }
+            100% { text-shadow: 0 0 8px rgba(56, 189, 248, 0.7), 0 0 20px rgba(15, 118, 110, 0.5), 3px 3px 8px rgba(0, 0, 0, 0.8); }
+        }
+
+        @keyframes hologramBoxGlow {
+            0% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.4), 0 0 30px rgba(15, 118, 110, 0.3), 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 32px rgba(56, 189, 248, 0.95), 0 0 65px rgba(56, 189, 248, 0.65), 0 0 85px rgba(200, 139, 50, 0.55), 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+            100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.4), 0 0 30px rgba(15, 118, 110, 0.3), 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
         }
 
         .page-title {
             position: absolute;
-            top: 05.5vh;
+            top: 07vh;
             left: 51%;
             transform: translateX(-50%);
             font-family: Georgia, "Times New Roman", serif;
@@ -175,16 +348,13 @@
             display: inline-block;
             line-height: 1.1;
             -webkit-text-stroke: 1.5px #ffffff;
-            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
             white-space: nowrap;
-            opacity: 0;
             z-index: 10;
-            transition: opacity 1s ease;
         }
 
         .quimera-word-container {
             position: absolute;
-            top: 57.5vh;
+            top: 65vh;
             left: 50%;
             transform: translateX(-50%);
             font-family: Georgia, "Times New Roman", serif;
@@ -193,16 +363,9 @@
             letter-spacing: 0.25em;
             line-height: 1.1;
             -webkit-text-stroke: 1.5px #000000;
-            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
             cursor: default;
-            opacity: 0;
-            transition: opacity 0.8s ease;
             white-space: nowrap;
             z-index: 10;
-        }
-
-        .quimera-word-container.visible {
-            opacity: 1;
         }
 
         .quimera-letter {
@@ -213,7 +376,7 @@
 
         .subtitle-text {
             position: absolute;
-            top: calc(57.5vh + 5.5rem + 1.0rem);
+            top: calc(65vh + 5.5rem + 1.0rem);
             left: 50%;
             transform: translateX(-50%);
             font-size: clamp(1rem, 2vw, 1.3rem);
@@ -223,11 +386,8 @@
             width: 90%;
             color: #ffffff;
             text-align: center;
-            opacity: 0;
             z-index: 10;
             -webkit-text-stroke: 0.75px #000000;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-            transition: opacity 1s ease;
         }
 
         .exploration-box {
@@ -235,35 +395,25 @@
             top: 92.5vh;
             left: 50%;
             transform: translateX(-50%);
-            max-width: 1225px;
+            max-width: 1100px;
             width: 100%;
-            padding: 0.2rem 0.2rem;
+            padding: 0.3rem 0.8rem;
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 8px;
             font-size: clamp(0.8rem, 1.5vw, 0.9rem);
-            color: #cbd5e1;
-            opacity: 0;
-            transition: opacity 0.8s ease;
+            font-weight: 700;
+            color: #ffffff;
             text-align: center;
             z-index: 10;
+            -webkit-text-stroke: 0.4px #000000;
         }
 
-        .exploration-box.visible {
-            opacity: 1;
-        }
-
-        #exp-title {
-            font-weight: bold;
-            color: #ffffff;
-            margin-bottom: 0.2rem;
-        }
-
-        footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+        footer.laser-burn-effect {
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
             padding: 0.5rem 1rem;
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(8px);
@@ -271,101 +421,35 @@
             text-align: center;
             color: #ffffff;
             font-size: clamp(0.7rem, 1.2vw, 0.85rem);
-            opacity: 0;
-            transition: opacity 500ms ease;
             z-index: 100;
-        }
-
-        footer.visible {
-            opacity: 1;
         }
 
         footer p {
             color: #e2e8f0;
         }
 
-        @media (min-width: 1400px) and (max-width: 1920px) and (max-height: 1080px) {
-            .page-title {
-                top: 05.5vh;
-                font-size: 5rem;
-            }
-            .quimera-word-container {
-                top: 57.5vh;
-            }
-            .subtitle-text {
-                top: calc(57.5vh + 5.5rem + 1.0rem);
-            }
-            .exploration-box {
-                top: 92.5vh;
-            }
-        }
-
         @media (max-width: 900px) {
-            body {
-                height: auto;
-                overflow-y: auto;
-                overflow-x: hidden;
-            }
-
-            .bg-image {
-                height: 100%;
-                background-attachment: scroll;
-            }
-
-            .top-bar {
-                position: relative !important;
-                flex-direction: column;
-                gap: 0.5rem;
-                padding: 1rem;
-                text-align: center;
-            }
-
-            .top-bar-container {
-                flex-direction: column;
-                gap: 0.8rem;
-            }
-
-            .nav-links {
-                justify-content: center;
-                gap: 0.8rem;
-            }
-
+            body { height: auto; overflow-y: auto; overflow-x: hidden; }
+            .bg-image { height: 100%; background-attachment: scroll; }
+            .top-bar { position: relative !important; flex-direction: column; gap: 0.5rem; padding: 1rem; text-align: center; }
+            .top-bar-container { flex-direction: column; gap: 0.8rem; }
+            .nav-links { justify-content: center; gap: 0.8rem; }
             .page-title, .quimera-word-container, .subtitle-text, .exploration-box {
-                position: relative !important;
-                top: auto !important;
-                left: auto !important;
-                transform: none !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                margin: 1rem auto !important;
-                text-align: center;
-                white-space: normal !important;
+                position: relative !important; top: auto !important; left: auto !important; transform: none !important; width: 100% !important; max-width: 100% !important; margin: 1rem auto !important; text-align: center; white-space: normal !important;
             }
-
-            .subtitle-text {
-                padding: 0 1rem;
-            }
-
-            .exploration-box {
-                padding: 1rem !important;
-            }
-
-            footer {
-                position: relative !important;
-                margin-top: 1.5rem;
-                padding: 1rem;
-            }
+            .subtitle-text { padding: 0 1rem; }
+            .exploration-box { padding: 1rem !important; }
+            footer.laser-burn-effect { position: relative !important; margin-top: 1.5rem; padding: 1rem; bottom: auto !important; left: auto !important; }
         }
 
-        /* Recuadro Central Modal */
         #modal-backdrop {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
             z-index: 1000;
             display: flex;
             align-items: center;
@@ -381,7 +465,9 @@
         }
 
         .modal-box {
-            background: var(--card-bg);
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('Quimera_QE_Mod.jpg');
+            background-size: cover;
+            background-position: center center;
             border: 1px solid var(--card-border);
             border-radius: 12px;
             padding: 2.5rem;
@@ -395,7 +481,6 @@
             transform-origin: center center;
         }
 
-        /* EFECTO APAGADO DE TV ANTIGUA */
         @keyframes tvShutdown {
             0% { transform: scale(1, 1); filter: brightness(1); opacity: 1; }
             40% { transform: scale(1, 0.005); filter: brightness(3); opacity: 1; }
@@ -403,7 +488,6 @@
             100% { transform: scale(0, 0); filter: brightness(0); opacity: 0; }
         }
 
-        /* EFECTO DE ENTRADA: APAGADO DE TV ANTIGUA INVERTIDO */
         @keyframes tvTurnOn {
             0% { transform: scale(0, 0); filter: brightness(0); opacity: 0; }
             30% { transform: scale(0.001, 0.005); filter: brightness(5); opacity: 1; }
@@ -412,42 +496,41 @@
         }
 
         .modal-box.crt-entry {
-            animation: tvTurnOn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: tvTurnOn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards, hologramBoxGlow 3s ease-in-out infinite alternate;
+            animation-delay: 0s, 0.4s;
         }
 
         .modal-box.crt-exit {
             animation: tvShutdown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes blinkCursor {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
         .modal-box h2 {
             font-family: Georgia, "Times New Roman", serif;
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            font-size: clamp(1.5rem, 3.5vw, 2.0rem);
+            font-weight: 900;
             color: #c88b32;
             margin-bottom: 1rem;
             padding-bottom: 0.4rem;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             text-align: center;
+            -webkit-text-stroke: 0.25px #ffffff;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
         }
 
         .modal-box p, .modal-box li {
-            font-size: clamp(0.9rem, 2vw, 1.02rem);
+            font-size: clamp(1.0rem, 2.25vw, 1.25rem);
+            font-weight: 700;
             color: #f1f5f9;
             margin-bottom: 1rem;
             line-height: 1.6;
+            -webkit-text-stroke: 0.3px #000000;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
         }
 
-        .modal-box ul {
-            padding-left: 1.25rem;
-            margin-bottom: 1rem;
-        }
+        .modal-box ul { padding-left: 1.25rem; margin-bottom: 1rem; }
 
         .process-flow {
-            background: rgba(15, 118, 110, 0.2);
+            background: rgba(15, 118, 110, 0.25);
             border-left: 4px solid var(--primary);
             padding: 1rem;
             border-radius: 4px;
@@ -467,21 +550,30 @@
             transition: color 0.2s ease;
         }
 
-        .close-link:hover {
-            color: #e0a96d;
-        }
+        .close-link:hover { color: #e0a96d; }
     </style>
 </head>
 <body>
 
-    <!-- Elemento de Audio -->
-    <audio id="bg-music" src="Quimera_Milonga_(Lado_B).mp3" loop preload="auto"></audio>
+    <!-- Capa CRT Scanlines -->
+    <div class="crt-scanlines"></div>
 
-    <!-- Capa de fondo animada -->
+    <!-- Elemento de Audio -->
+    <audio id="bg-music" src="Quimera_Milonga_(Lado_B).mp3" loop preload="auto" crossorigin="anonymous"></audio>
+
+    <!-- Capa de fondo estática para Desarrollo -->
     <div class="bg-image" id="bg-image"></div>
+    
+    <!-- Capa de luz reactiva exclusiva del puntero -->
+    <div class="cursor-light-glow" id="cursor-light-glow"></div>
 
     <!-- Canvas para la Lluvia Matrix -->
     <canvas id="matrix-canvas"></canvas>
+
+    <!-- Capa de Glitch Central -->
+    <div id="glitch-overlay">
+        <img id="glitch-img" src="" alt="Glitch Visual">
+    </div>
 
     <!-- Capa de desvanecimiento inicial en blanco -->
     <div id="intro-overlay"></div>
@@ -489,29 +581,31 @@
     <!-- Navegación Top Bar -->
     <nav class="top-bar">
         <div class="top-bar-container">
-            <a href="https://quimerac3.github.io/" class="brand-logo" data-text="QUIMERA - Indice General"></a>
+            <a href="https://quimerac3.github.io/" class="brand-logo laser-burn-effect" id="brand-logo" data-text="QUIMERA - Indice General"></a>
             <ul class="nav-links">
-                <li><a href="#" id="audio-toggle"><span style="color: #ffffff;">🎵</span> Música: OFF</a></li>
-                <li><a href="#" id="fullscreen-toggle">⛶ Pantalla Completa</a></li>
+                <li><a href="#" id="audio-toggle" class="laser-burn-effect"><span style="color: #ffffff;">🎵</span> Música: OFF</a></li>
+                <li><a href="#" id="fullscreen-toggle" class="laser-burn-effect">⛶ Pantalla Completa</a></li>
             </ul>
         </div>
     </nav>
 
-    <h1 class="page-title" id="main-title"></h1>
+    <!-- Título principal -->
+    <h1 class="page-title laser-burn-effect" id="main-title">DESARROLLO</h1>
 
-    <div class="quimera-word-container" id="quimera-word">
+    <!-- Palabra QUIMERA -->
+    <div class="quimera-word-container laser-burn-effect" id="quimera-word">
         <span class="quimera-letter" data-index="0">Q</span><span class="quimera-letter" data-index="1">U</span><span class="quimera-letter" data-index="2">I</span><span class="quimera-letter" data-index="3">M</span><span class="quimera-letter" data-index="4">E</span><span class="quimera-letter" data-index="5">R</span><span class="quimera-letter" data-index="6">A</span>
     </div>
 
-    <div class="subtitle-text" id="sub-text"></div>
+    <!-- Subtítulo -->
+    <div class="subtitle-text laser-burn-effect" id="sub-text"></div>
 
-    <div class="exploration-box" id="exp-box">
-        <p id="exp-title"></p>
-        <p id="exp-desc"></p>
-    </div>
+    <!-- Cuadro de exploración interactiva -->
+    <div class="exploration-box laser-burn-effect" id="exp-box"></div>
 
-    <footer>
-        <p data-text="&bull; &copy; 2026 Instituto Quimera. &bull; Centro de Investigación, Docencia, Servicio y Difusión. &bull; Dr.C. Cesar Cerezo Camacho. &bull; Todos los derechos reservados. &bull;"></p>
+    <!-- Footer -->
+    <footer class="laser-burn-effect" id="main-footer">
+        <p id="footer-text"></p>
     </footer>
 
     <!-- Modal -->
@@ -529,7 +623,39 @@
             }
         });
 
-        // Control de Reproducción de Música
+        // PRECARGA DEFINITIVA DE TODAS LAS IMÁGENES EN MEMORIA POR JAVASCRIPT
+        const allImagesToPreload = [
+            'Quimera_Desarrollo.webp',
+            'Quimera_QE_Mod.jpg',
+            'glitch_Q.webp', 
+            'glitch_U.webp', 
+            'glitch_I.webp', 
+            'glitch_M.webp', 
+            'glitch_E.webp', 
+            'glitch_R.webp', 
+            'glitch_A.webp'
+        ];
+
+        allImagesToPreload.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+
+        const glitchImages = [
+            'glitch_Q.webp', 'glitch_U.webp', 'glitch_I.webp', 'glitch_M.webp', 'glitch_E.webp', 'glitch_R.webp', 'glitch_A.webp'
+        ];
+
+        // CONTROL DE MOVIMIENTO DEL CURSOR
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            document.documentElement.style.setProperty('--mouse-x', `${mouseX}px`);
+            document.documentElement.style.setProperty('--mouse-y', `${mouseY}px`);
+        });
+
         const music = document.getElementById('bg-music');
         const audioToggle = document.getElementById('audio-toggle');
         let isMusicPlaying = false;
@@ -550,17 +676,13 @@
             }
         });
 
-        // Control de Pantalla Completa
         const fullscreenToggle = document.getElementById('fullscreen-toggle');
-
         fullscreenToggle.addEventListener('click', (e) => {
             e.preventDefault();
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().then(() => {
                     fullscreenToggle.textContent = '❌ Salir Pantalla Completa';
-                }).catch(err => {
-                    console.log("Error al intentar entrar en pantalla completa:", err);
-                });
+                }).catch(err => console.log(err));
             } else {
                 document.exitFullscreen().then(() => {
                     fullscreenToggle.textContent = '⛶ Pantalla Completa';
@@ -576,6 +698,7 @@
             }
         });
 
+        // DATOS DE DESARROLLO 100% ÍNTEGROS
         const modalData = [
             {
                 title: "CIENCIA E INVESTIGACIÓN.",
@@ -641,131 +764,74 @@
             }
         ];
 
-        function typeWriter(elementId, text, speed = 35) {
-            return new Promise(resolve => {
-                const el = document.getElementById(elementId);
-                el.innerHTML = '';
-                el.style.opacity = 1; 
-                let i = 0;
-                function type() {
-                    if (i < text.length) {
-                        el.innerHTML += text.charAt(i);
-                        i++;
-                        setTimeout(type, speed);
-                    } else {
-                        resolve();
-                    }
-                }
-                type();
-            });
-        }
-
-        function typeWriterHTML(element, htmlString, speed = 20) {
-            return new Promise(resolve => {
-                element.innerHTML = '';
-                const tokens = htmlString.match(/(<\/?[^>]+(>|$)|[^<]+)/g) || [htmlString];
-                let tokenIdx = 0;
-                let charIdx = 0;
-                
-                function type() {
-                    if (tokenIdx < tokens.length) {
-                        let currentToken = tokens[tokenIdx];
-                        if (currentToken.startsWith('<')) {
-                            element.innerHTML += currentToken;
-                            tokenIdx++;
-                            setTimeout(type, speed);
-                        } else {
-                            if (charIdx < currentToken.length) {
-                                element.innerHTML += currentToken.charAt(charIdx);
-                                charIdx++;
-                                setTimeout(type, speed);
-                            } else {
-                                charIdx = 0;
-                                tokenIdx++;
-                                setTimeout(type, speed);
-                            }
-                        }
-                    } else {
-                        resolve();
-                    }
-                }
-                type();
-            });
-        }
-
         async function runIntroSequence() {
             const whiteOverlay = document.getElementById('intro-overlay');
             whiteOverlay.classList.add('fade-out');
             await new Promise(r => setTimeout(r, 1000));
 
             document.getElementById('bg-image').classList.add('visible');
+            document.getElementById('cursor-light-glow').classList.add('visible');
             await new Promise(r => setTimeout(r, 1000));
 
             document.querySelector('.top-bar').style.opacity = '1';
             await new Promise(r => setTimeout(r, 400));
 
-            const brandLogo = document.querySelector('.brand-logo');
-            const logoText = brandLogo.dataset.text;
-            let logoIdx = 0;
-            await new Promise(resolveLogo => {
-                function typeBrandLogo() {
-                    if (logoIdx <= logoText.length) {
-                        brandLogo.innerHTML = logoText.substring(0, logoIdx);
-                        logoIdx++;
-                        setTimeout(typeBrandLogo, 40);
-                    } else {
-                        resolveLogo();
-                    }
-                }
-                typeBrandLogo();
-            });
-            await new Promise(r => setTimeout(r, 400));
+            const brandLogo = document.getElementById('brand-logo');
+            brandLogo.textContent = brandLogo.dataset.text;
+            brandLogo.classList.add('active-laser');
+            await new Promise(r => setTimeout(r, 1200));
+            brandLogo.classList.remove('active-laser');
+            brandLogo.classList.add('revealed', 'hologram-mode');
 
-            await typeWriter('main-title', 'DESARROLLO', 80);
-            await new Promise(r => setTimeout(r, 400));
+            const audioToggleBtn = document.getElementById('audio-toggle');
+            audioToggleBtn.classList.add('active-laser');
+            await new Promise(r => setTimeout(r, 1200));
+            audioToggleBtn.classList.remove('active-laser');
+            audioToggleBtn.classList.add('revealed', 'hologram-mode');
 
-            document.getElementById('quimera-word').classList.add('visible');
-            await new Promise(r => setTimeout(r, 800));
+            const fullscreenToggleBtn = document.getElementById('fullscreen-toggle');
+            fullscreenToggleBtn.classList.add('active-laser');
+            await new Promise(r => setTimeout(r, 1200));
+            fullscreenToggleBtn.classList.remove('active-laser');
+            fullscreenToggleBtn.classList.add('revealed', 'hologram-mode');
+
+            const mainTitle = document.getElementById('main-title');
+            mainTitle.classList.add('active-laser');
+            await new Promise(r => setTimeout(r, 1200));
+            mainTitle.classList.remove('active-laser');
+            mainTitle.classList.add('revealed', 'hologram-mode');
+
+            const quimeraWord = document.getElementById('quimera-word');
+            quimeraWord.classList.add('active-laser');
+            await new Promise(r => setTimeout(r, 1200));
+            quimeraWord.classList.remove('active-laser');
+            quimeraWord.classList.add('revealed', 'hologram-mode');
+            
             await playQuimeraAppearanceAsync();
             await new Promise(r => setTimeout(r, 400));
 
-            await typeWriter('sub-text', 'Un ecosistema para el conocimiento, la formación y la práctica interdisciplinaria.', 35);
+            const subText = document.getElementById('sub-text');
+            subText.textContent = 'Un ecosistema para el conocimiento, la formación y la práctica interdisciplinaria.';
+            subText.classList.add('active-laser');
+            await new Promise(r => setTimeout(r, 1200));
+            subText.classList.remove('active-laser');
+            subText.classList.add('revealed', 'hologram-mode');
+
+            const expBox = document.getElementById('exp-box');
+            expBox.textContent = 'EXPLORACIÓN INTERACTIVA: Una vez que la palabra QUIMERA cambie de color a blanco, seleccione la letra parpadeante para descubrir: Las ÁREAS de DESARROLLO de QUIMERA.';
+            expBox.classList.add('active-laser');
+            await new Promise(r => setTimeout(r, 1200));
+            expBox.classList.remove('active-laser');
+            expBox.classList.add('revealed', 'hologram-mode');
             await new Promise(r => setTimeout(r, 400));
 
-            document.getElementById('exp-box').classList.add('visible');
-            await new Promise(r => setTimeout(r, 600));
-
-            await typeWriter('exp-title', 'EXPLORACIÓN INTERACTIVA: Una vez que la palabra QUIMERA cambie de color a blanco, seleccione la letra parpadeante para descubrir: Las ÁREAS de DESARROLLO de QUIMERA.', 25);
-            await new Promise(r => setTimeout(r, 400));
-
-            document.querySelector('footer').classList.add('visible');
-            await new Promise(r => setTimeout(r, 600));
-
-            await new Promise(resolveFooter => {
-                const footerPs = document.querySelectorAll('footer p');
-                let pIndex = 0;
-                function typeFooterP() {
-                    if (pIndex >= footerPs.length) {
-                        resolveFooter();
-                        return;
-                    }
-                    let p = footerPs[pIndex];
-                    let text = p.dataset.text.replace('2026', new Date().getFullYear());
-                    let i = 0;
-                    function typeChar() {
-                        if (i <= text.length) {
-                            p.innerHTML = text.substring(0, i);
-                            i++;
-                            setTimeout(typeChar, 18);
-                        } else {
-                            pIndex++;
-                            setTimeout(typeFooterP, 100);
-                        }
-                    }
-                    typeChar();
-                }
-                typeFooterP();
-            });
+            const mainFooter = document.getElementById('main-footer');
+            const footerText = document.getElementById('footer-text');
+            footerText.textContent = `• © ${new Date().getFullYear()} Instituto Quimera. • Centro de Investigación, Docencia, Servicio y Difusión. • Dr.C. Cesar Cerezo Camacho. • Todos los derechos reservados. •`;
+            mainFooter.classList.add('active-laser');
+            await new Promise(r => setTimeout(r, 1200));
+            mainFooter.classList.remove('active-laser');
+            mainFooter.classList.add('revealed', 'hologram-mode');
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -848,41 +914,73 @@
                     clearInterval(blinkFive);
                     targetLetter.style.color = '#ffffff';
 
-                    // Si se selecciona la última letra 'A' (index 6)
                     if (index === 6) {
-                        triggerMatrixAndFadeElements();
+                        setTimeout(() => {
+                            triggerMatrixAndFadeElements();
+                        }, 2800);
                     }
 
-                    showModalTyped(index);
+                    triggerLetterGlitch(index, () => {
+                        showModalTyped(index);
+                    });
                 }
             }, 100);
         }
 
-        // Función para desvanecer elementos en negro e iniciar la lluvia Matrix
+        function triggerLetterGlitch(index, callback) {
+            const glitchOverlay = document.getElementById('glitch-overlay');
+            const glitchImg = document.getElementById('glitch-img');
+
+            glitchImg.src = ''; 
+            glitchOverlay.style.opacity = '1';
+
+            setTimeout(() => {
+                glitchImg.src = glitchImages[index];
+            }, 30);
+
+            setTimeout(() => {
+                glitchOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    if (callback) callback();
+                }, 100); 
+            }, 750);
+        }
+
         function triggerMatrixAndFadeElements() {
             const bgImg = document.getElementById('bg-image');
             if (bgImg) bgImg.classList.remove('visible');
 
+            const cursorGlow = document.getElementById('cursor-light-glow');
+            if (cursorGlow) cursorGlow.classList.remove('visible');
+
             const elementsToFade = [
+                document.getElementById('brand-logo'),
+                document.getElementById('audio-toggle'),
+                document.getElementById('fullscreen-toggle'),
                 document.getElementById('main-title'),
-                document.querySelector('.top-bar'),
                 document.getElementById('sub-text'),
                 document.getElementById('exp-box'),
-                document.querySelector('footer')
+                document.getElementById('main-footer')
             ];
 
             elementsToFade.forEach(el => {
                 if (el) el.classList.add('fade-out-element');
             });
 
-            startMatrixRain();
+            const quimeraWord = document.getElementById('quimera-word');
+            if (quimeraWord) {
+                quimeraWord.classList.remove('hologram-mode');
+                quimeraWord.style.opacity = '1';
+                quimeraWord.style.textShadow = '3px 3px 8px rgba(0, 0, 0, 0.9)';
+            }
+
+            startMatrixRainClean();
             const canvas = document.getElementById('matrix-canvas');
             if (canvas) canvas.style.opacity = '1';
         }
 
-        // Generador del Código Matrix Dorado
         let matrixInterval = null;
-        function startMatrixRain() {
+        function startMatrixRainClean() {
             const canvas = document.getElementById('matrix-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -900,20 +998,13 @@
             let drops = Array(columns).fill(1);
 
             function draw() {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 ctx.font = fontSize + 'px monospace';
-
                 for (let i = 0; i < drops.length; i++) {
                     const text = chars.charAt(Math.floor(Math.random() * chars.length));
-
-                    if (Math.random() > 0.88) {
-                        ctx.fillStyle = '#fffbeb'; // Brillo inicial de la gota
-                    } else {
-                        ctx.fillStyle = '#c88b32'; // Dorado / cobre principal
-                    }
-
+                    ctx.fillStyle = Math.random() > 0.85 ? '#fffbeb' : '#c88b32';
                     ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
                     if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
@@ -924,7 +1015,7 @@
             }
 
             if (matrixInterval) clearInterval(matrixInterval);
-            matrixInterval = setInterval(draw, 33);
+            matrixInterval = setInterval(draw, 30);
         }
 
         async function showModalTyped(index) {
@@ -942,31 +1033,39 @@
             backdrop.classList.add('active');
 
             const data = modalData[index];
-            
-            await typeWriterHTML(modalTitle, data.title, 25);
+            modalTitle.textContent = data.title;
+            modalTitle.className = 'laser-burn-effect';
+
+            const createdElements = [modalTitle];
 
             for (let item of data.content) {
                 if (item.type === 'p') {
                     let pElem = document.createElement('p');
+                    pElem.className = 'laser-burn-effect';
+                    pElem.textContent = item.text;
                     modalBody.appendChild(pElem);
-                    await typeWriterHTML(pElem, item.text, 12);
+                    createdElements.push(pElem);
                 } else if (item.type === 'flow') {
                     let flowElem = document.createElement('div');
-                    flowElem.className = 'process-flow';
+                    flowElem.className = 'process-flow laser-burn-effect';
+                    flowElem.textContent = item.text;
                     modalBody.appendChild(flowElem);
-                    await typeWriterHTML(flowElem, item.text, 12);
+                    createdElements.push(flowElem);
                 } else if (item.type === 'ul') {
                     let ulElem = document.createElement('ul');
                     modalBody.appendChild(ulElem);
                     for (let liText of item.items) {
                         let liElem = document.createElement('li');
+                        liElem.className = 'laser-burn-effect';
+                        liElem.textContent = liText;
                         ulElem.appendChild(liElem);
-                        await typeWriterHTML(liElem, liText, 12);
+                        createdElements.push(liElem);
                     }
                 }
             }
 
             let closeContainer = document.createElement('div');
+            closeContainer.className = 'laser-burn-effect';
             closeContainer.style.textAlign = 'right';
             closeContainer.style.marginTop = '1.5rem';
 
@@ -975,24 +1074,28 @@
             closeBtn.id = 'modal-close-btn';
             closeBtn.textContent = 'Cerrar.';
 
-            let cursor = document.createElement('span');
-            cursor.style.display = 'inline-block';
-            cursor.style.width = '8px';
-            cursor.style.height = '1.1em';
-            cursor.style.background = '#c88b32';
-            cursor.style.marginLeft = '4px';
-            cursor.style.verticalAlign = 'middle';
-            cursor.style.animation = 'blinkCursor 0.8s infinite';
-
             closeContainer.appendChild(closeBtn);
-            closeContainer.appendChild(cursor);
             modalBody.appendChild(closeContainer);
+            createdElements.push(closeContainer);
+
+            await new Promise(r => setTimeout(r, 200));
+
+            for (let el of createdElements) {
+                el.classList.add('active-laser');
+                await new Promise(r => setTimeout(r, 250));
+            }
+
+            await new Promise(r => setTimeout(r, 1200));
+
+            for (let el of createdElements) {
+                el.classList.remove('active-laser');
+                el.classList.add('revealed');
+            }
 
             const triggerClose = () => {
                 closeBtn.onclick = null;
                 backdrop.onclick = null;
 
-                // Animación de apagado de TV antigua (CRT exit)
                 modalBox.classList.remove('crt-entry');
                 modalBox.classList.add('crt-exit');
                 backdrop.classList.remove('active');
@@ -1024,6 +1127,10 @@
 
         function enableFinalHyperlink() {
             const wordContainer = document.getElementById('quimera-word');
+            
+            wordContainer.classList.remove('fade-out-element');
+            wordContainer.style.opacity = '1';
+            wordContainer.style.pointerEvents = 'auto';
             wordContainer.style.cursor = 'pointer';
 
             const stepTime = 120;
@@ -1035,9 +1142,7 @@
                         letters[i].style.color = '#c88b32';
                         i++;
                         globalColorInterval = setTimeout(() => turnCopperGold(callback), stepTime);
-                    } else if (callback) {
-                        callback();
-                    }
+                    } else if (callback) callback();
                 }
 
                 let j = 0;
@@ -1046,9 +1151,7 @@
                         letters[j].style.color = '#ffffff';
                         j++;
                         globalColorInterval = setTimeout(() => turnWhite(callback), stepTime);
-                    } else if (callback) {
-                        callback();
-                    }
+                    } else if (callback) callback();
                 }
 
                 turnCopperGold(() => {
@@ -1064,9 +1167,7 @@
 
             wordContainer.onclick = () => {
                 clearTimeout(globalColorInterval);
-
                 document.body.classList.add('blurring');
-
                 const overlay = document.getElementById('intro-overlay');
                 overlay.style.background = '#ffffff';
                 overlay.style.opacity = '1';
