@@ -246,7 +246,7 @@
             color: #ffffff;
         }
 
-        /* EFECTO LÁSER COMÚN */
+        /* EFECTO LÁSER COMÚN (ACELERADO A 0.6s) */
         .laser-burn-effect {
             opacity: 0;
             clip-path: inset(0 100% 0 0);
@@ -255,7 +255,7 @@
 
         .laser-burn-effect.active-laser {
             opacity: 1;
-            animation: hyperLaserReveal 1.2s cubic-bezier(0.15, 1, 0.2, 1) forwards;
+            animation: hyperLaserReveal 0.6s cubic-bezier(0.15, 1, 0.2, 1) forwards;
         }
 
         .laser-burn-effect.revealed {
@@ -272,7 +272,7 @@
             width: 16px;
             background: radial-gradient(circle, #ffffff 0%, #38bdf8 40%, #c88b32 80%, transparent 100%);
             box-shadow: 0 0 35px #38bdf8, 0 0 70px #fffbeb, 0 0 100px #c88b32, inset 0 0 15px #ffffff;
-            animation: hyperLaserBarMove 1.2s cubic-bezier(0.15, 1, 0.2, 1) forwards;
+            animation: hyperLaserBarMove 0.6s cubic-bezier(0.15, 1, 0.2, 1) forwards;
             z-index: 15;
             filter: blur(0.5px);
         }
@@ -288,7 +288,7 @@
             pointer-events: none;
             background: linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(56,189,248,0.6) 30%, rgba(200,139,50,0.3) 60%, transparent 100%);
             mix-blend-mode: color-dodge;
-            animation: hyperLaserSparksWave 1.2s cubic-bezier(0.15, 1, 0.2, 1) forwards;
+            animation: hyperLaserSparksWave 0.6s cubic-bezier(0.15, 1, 0.2, 1) forwards;
             z-index: 12;
         }
 
@@ -698,7 +698,7 @@
             }
         });
 
-        // DATOS DE DESARROLLO 100% ÍNTEGROS
+        // DATOS DE DESARROLLO 100% ÍNTEGROS[cite: 9]
         const modalData = [
             {
                 title: "CIENCIA E INVESTIGACIÓN.",
@@ -779,31 +779,31 @@
             const brandLogo = document.getElementById('brand-logo');
             brandLogo.textContent = brandLogo.dataset.text;
             brandLogo.classList.add('active-laser');
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 600)); // Actualizado a 600ms
             brandLogo.classList.remove('active-laser');
             brandLogo.classList.add('revealed', 'hologram-mode');
 
             const audioToggleBtn = document.getElementById('audio-toggle');
             audioToggleBtn.classList.add('active-laser');
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 600)); // Actualizado a 600ms
             audioToggleBtn.classList.remove('active-laser');
             audioToggleBtn.classList.add('revealed', 'hologram-mode');
 
             const fullscreenToggleBtn = document.getElementById('fullscreen-toggle');
             fullscreenToggleBtn.classList.add('active-laser');
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 600)); // Actualizado a 600ms
             fullscreenToggleBtn.classList.remove('active-laser');
             fullscreenToggleBtn.classList.add('revealed', 'hologram-mode');
 
             const mainTitle = document.getElementById('main-title');
             mainTitle.classList.add('active-laser');
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 600)); // Actualizado a 600ms
             mainTitle.classList.remove('active-laser');
             mainTitle.classList.add('revealed', 'hologram-mode');
 
             const quimeraWord = document.getElementById('quimera-word');
             quimeraWord.classList.add('active-laser');
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 600)); // Actualizado a 600ms
             quimeraWord.classList.remove('active-laser');
             quimeraWord.classList.add('revealed', 'hologram-mode');
             
@@ -813,14 +813,14 @@
             const subText = document.getElementById('sub-text');
             subText.textContent = 'Un ecosistema para el conocimiento, la formación y la práctica interdisciplinaria.';
             subText.classList.add('active-laser');
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 600)); // Actualizado a 600ms
             subText.classList.remove('active-laser');
             subText.classList.add('revealed', 'hologram-mode');
 
             const expBox = document.getElementById('exp-box');
             expBox.textContent = 'EXPLORACIÓN INTERACTIVA: Una vez que la palabra QUIMERA cambie de color a blanco, seleccione la letra parpadeante para descubrir: Las ÁREAS de DESARROLLO de QUIMERA.';
             expBox.classList.add('active-laser');
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 600)); // Actualizado a 600ms
             expBox.classList.remove('active-laser');
             expBox.classList.add('revealed', 'hologram-mode');
             await new Promise(r => setTimeout(r, 400));
@@ -829,7 +829,7 @@
             const footerText = document.getElementById('footer-text');
             footerText.textContent = `• © ${new Date().getFullYear()} Instituto Quimera. • Centro de Investigación, Docencia, Servicio y Difusión. • Dr.C. Cesar Cerezo Camacho. • Todos los derechos reservados. •`;
             mainFooter.classList.add('active-laser');
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 600)); // Actualizado a 600ms
             mainFooter.classList.remove('active-laser');
             mainFooter.classList.add('revealed', 'hologram-mode');
         }
@@ -1082,10 +1082,10 @@
 
             for (let el of createdElements) {
                 el.classList.add('active-laser');
-                await new Promise(r => setTimeout(r, 250));
+                await new Promise(r => setTimeout(r, 250)); // Traslape escalonado rápido de 250ms
             }
 
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 600)); // Espera final sincronizada a 600ms
 
             for (let el of createdElements) {
                 el.classList.remove('active-laser');
